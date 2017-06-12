@@ -8,36 +8,27 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- *
- * Esta Clase captura el tiempo de las peticiones
- * desde que entra a la request o se hace una apeticion, hasta que devolvemos una respuesta
- *
- */
 
-@Component("requestTimeInterceptor")
+@Component("RequestTimeInterceptor")
 public class RequestTimeInterceptor extends HandlerInterceptorAdapter {
 
+    //Creamos el log en Spring
     private static final Log LOG = LogFactory.getLog(RequestTimeInterceptor.class);
 
-    //Obtenemos el tiempo  inicial
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
 
-        request.setAttribute("inicio", System.currentTimeMillis());
+    //se ejcuta antes de entrar al controlador
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        request.setAttribute("startTime", System.currentTimeMillis());
         return true;
     }
 
-    //hacemos la resta para tener el tiempo total
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,  Exception ex) throws Exception{
+    //se ejecuta antes de mostrar la vista en el navegador
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 
-        long inicio = (long) request.getAttribute("inicio");
-
-        LOG.info(" ** Request URL: "+ request.getRequestURL().toString() + " Tiempo total: "+ (System.currentTimeMillis() - inicio) + " ms");
-
+        long startTime = (long) request.getAttribute("startTime");
+        LOG.info("REQUEST URL: "+ request.getRequestURL().toString()+" -- TOTAL TIME: "+ (System.currentTimeMillis() - startTime) + " ms");
     }
-
-
-
-
 }
